@@ -9,6 +9,9 @@ CACHE_DIRECTORY="$DC_DIRECTORY/data/cache"
 if [ ! -d "$DATA_DIRECTORY" ]; then
     echo "Initially creating persistent directory: $DATA_DIRECTORY"
     mkdir -p "$DATA_DIRECTORY"
+    chmod -R 777 "$DATA_DIRECTORY"
+    mkdir -p "$REPORT_DIRECTORY"
+    chmod -R 777 "$REPORT_DIRECTORY"
 fi
 if [ ! -d "$CACHE_DIRECTORY" ]; then
     echo "Initially creating persistent directory: $CACHE_DIRECTORY"
