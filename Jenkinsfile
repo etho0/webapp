@@ -31,6 +31,16 @@ pipeline {
         
       }
     }
+    
+    
+    stage('Semgrep-Scan') {
+        steps {
+          sh 'pip3 install semgrep'
+          sh 'semgrep --config p/ci --config p/security-audit --config p/secrets --output scan_results.json --json'
+          sh 'cat scan_results.json'
+      }
+    }
+
             
     stage ('Build') {
       steps {
