@@ -33,7 +33,7 @@ pipeline {
     }
     
     
-    stage('Semgrep-Scan') {
+    stage('SAST-Semgrep-Scan') {
         steps {
           sh 'pip3 install semgrep'
           sh 'semgrep --config p/ci --config p/security-audit --config p/secrets --output scan_results.json --json'
@@ -48,6 +48,7 @@ pipeline {
        }
     }
     
+    
     stage ('Deploy-To-Tomcat') {
             steps {
            sshagent(['tomcat']) {
@@ -56,6 +57,14 @@ pipeline {
            }       
     }
     
+    
+    stage ('DAST') {
+      steps {
+        sshagent(['zap']) {
+         sh 'ssh -o  StrictHostKeyChecking=no ubuntu@65.2.142.213 "docker run -t owasp/zap2docker-stable zap-baseline.py -t http://65.2.172.6:8080/WebApp/" || true'
+        }
+      }
+    }
     
   }
 }
