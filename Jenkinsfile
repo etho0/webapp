@@ -16,8 +16,17 @@ pipeline {
     stage ('Check-Git-Secrets') {
       steps {
       sh 'rm trufflehog || true'
-      sh 'docker run gesellix/trufflehog --json https://github.com/etho0/webapp.git > trufflehog'
-      sh 'cat trufflehog'
+      sh 'docker run gesellix/trufflehog --json https://github.com/etho0/webapp.git > trufflehog.json'
+      sh 'cat trufflehog.json'
+      sh 'curl -X POST \
+     -H "accept: application/json" \
+     -H "Authorization: Token 1a527bc80ccc95493e36128611e87c26023e52f3 " \
+     -H "Content-Type: multipart/form-data" \
+     -F "test=1" \
+     -F "file=@trufflehog.json;type=application/json" \
+     -F "scan_type=Trufflehog Scan" \
+     -F "tags=WebApp-Pipeline " \
+     "http:// 13.234.59.184:8080/api/v2/reimport-scan/"'
       }
     }
     
