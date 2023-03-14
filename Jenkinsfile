@@ -16,7 +16,7 @@ pipeline {
     stage ('Check-Git-Secrets') {
       steps {
       sh 'rm trufflehog || true'
-      sh 'docker run gesellix/trufflehog --json-legacy https://github.com/etho0/webapp.git > trufflehog.json'
+      sh 'docker run gesellix/trufflehog --json https://github.com/etho0/webapp.git > trufflehog.json'
       sh 'cat trufflehog.json'
       sh 'curl -X "POST" "http://13.234.59.184:8080/api/v2/reimport-scan/" -H "Authorization: Token 5eb4cf9d009841b5b4c7c27ce86b9f78b3dac3d0" -H "accept: application/json" -H "Content-Type: multipart/form-data" -H "X-CSRFToken: 5eb4cf9d009841b5b4c7c27ce86b9f78b3dac3d0" -F "minimum_severity=Info" -F "active=true" -F "verified=true" -F "do_not_reactivate=true" -F "scan_type=Trufflehog Scan" -F "file=@trufflehog.json;type=application/json" -F "product_name=WebApp-Pipeline" -F "engagement_name=Devsecops" -F "test=1" -F "test_title=Trufflehog (Trufflehog Scan)" -F "push_to_jira=false" -F "close_old_findings=true" -F "close_old_findings_product_scope=false" -F "create_finding_groups_for_all_findings=true"'
       }
