@@ -18,7 +18,7 @@ pipeline {
       sh 'rm trufflehog || true'
       sh 'docker run gesellix/trufflehog --json https://github.com/etho0/webapp.git > trufflehog.json'
       sh 'cat trufflehog.json'
-      sh 'curl -X POST -H "accept: application/json" -H "Authorization: Token 1a527bc80ccc95493e36128611e87c26023e52f3" -H "Content-Type: multipart/form-data" -F "test=1" -F "file=@trufflehog.json;type=application/json" -F "scan_type=Trufflehog Scan" -F "tags=WebApp-Pipeline" "http://13.234.59.184:8080/api/v2/reimport-scan"'
+      sh 'curl -X "POST" "http://13.234.59.184:8080/api/v2/reimport-scan/" -H "Authorization: Token 5eb4cf9d009841b5b4c7c27ce86b9f78b3dac3d0" -H "accept: application/json" -H "Content-Type: multipart/form-data" -H "X-CSRFToken: 5eb4cf9d009841b5b4c7c27ce86b9f78b3dac3d0" -F "minimum_severity=Info" -F "active=true" -F "verified=true" -F "do_not_reactivate=true" -F "scan_type=Trufflehog Scan" -F "file=@trufflehog.json;type=application/json" -F "product_name=WebApp-Pipeline" -F "engagement_name=Devsecops" -F "test=1" -F "test_title=Trufflehog (Trufflehog Scan)" -F "push_to_jira=false" -F "close_old_findings=true" -F "close_old_findings_product_scope=false" -F "create_finding_groups_for_all_findings=true"'
       }
     }
     
@@ -29,6 +29,7 @@ pipeline {
          sh 'chmod +x owasp-dependency-check.sh'
          sh 'bash owasp-dependency-check.sh'
          sh 'cat /var/lib/jenkins/workspace/webapp-cicd-pipeline@2/odc-reports/dependency-check-report.xml'
+         sh 'curl -X "POST" "http://13.234.59.184:8080/api/v2/reimport-scan/" -H "Authorization: Token 5eb4cf9d009841b5b4c7c27ce86b9f78b3dac3d0" -H "accept: text/xml" -H "Content-Type: multipart/form-data" -H "X-CSRFToken: 5eb4cf9d009841b5b4c7c27ce86b9f78b3dac3d0" -F "minimum_severity=Info" -F "active=true" -F "verified=true" -F "do_not_reactivate=true" -F "scan_type=Dependency Check Scan" -F "file=@/var/lib/jenkins/workspace/webapp-cicd-pipeline@2/odc-reports/dependency-check-report.xml;type=text/xml" -F "product_name=WebApp-Pipeline" -F "engagement_name=Devsecops" -F "test=3" -F "test_title=OWASP Dependency checks (Dependency Check Scan)" -F "push_to_jira=false" -F "close_old_findings=true" -F "close_old_findings_product_scope=false" -F "create_finding_groups_for_all_findings=true"'
         
       }
     }
@@ -39,7 +40,7 @@ pipeline {
           sh 'pip3 install semgrep'
           sh 'semgrep --config p/ci --config p/security-audit --config p/secrets --output scan_results.json --json'
           sh 'cat scan_results.json'
-          sh 'curl -X "POST" "http://13.234.59.184:8080/api/v2/reimport-scan/" -H "Authorization: Token 1a527bc80ccc95493e36128611e87c26023e52f3" -H "accept: application/json" -H "Content-Type: multipart/form-data" -H "X-CSRFToken: 1a527bc80ccc95493e36128611e87c26023e52f3" -F "minimum_severity=Info" -F "active=true" -F "verified=true" -F "do_not_reactivate=true" -F "scan_type=Semgrep JSON Report" -F "file=@scan_results.json;type=application/json" -F "product_name=WebApp-Pipeline" -F "engagement_name=Devsecops" -F "test=2" -F "test_title=semgrep (Semgrep JSON Report)" -F "push_to_jira=false" -F "close_old_findings=true" -F "close_old_findings_product_scope=false" -F "create_finding_groups_for_all_findings=true"'
+          sh 'curl -X "POST" "http://13.234.59.184:8080/api/v2/reimport-scan/" -H "Authorization: Token 5eb4cf9d009841b5b4c7c27ce86b9f78b3dac3d0" -H "accept: application/json" -H "Content-Type: multipart/form-data" -H "X-CSRFToken: 5eb4cf9d009841b5b4c7c27ce86b9f78b3dac3d0" -F "minimum_severity=Info" -F "active=true" -F "verified=true" -F "do_not_reactivate=true" -F "scan_type=Semgrep JSON Report" -F "file=@scan_results.json;type=application/json" -F "product_name=WebApp-Pipeline" -F "engagement_name=Devsecops" -F "test=2" -F "test_title=semgrep (Semgrep JSON Report)" -F "push_to_jira=false" -F "close_old_findings=true" -F "close_old_findings_product_scope=false" -F "create_finding_groups_for_all_findings=true"'
       }
     }
 
@@ -63,7 +64,8 @@ pipeline {
     stage ('DAST') {
       steps {
         sshagent(['zap']) {
-         sh 'ssh -o  StrictHostKeyChecking=no ubuntu@65.2.142.213 "docker run -t owasp/zap2docker-stable zap-baseline.py -t http://65.2.172.6:8080/WebApp/" || true'
+         sh 'ssh -o  StrictHostKeyChecking=no ubuntu@65.2.142.213 "docker run -t owasp/zap2docker-stable zap-baseline.py -t http://65.2.172.6:8080/WebApp/" || true -x zap-report.xml'
+         sh 'curl -X "POST" "http://13.234.59.184:8080/api/v2/reimport-scan/" -H "Authorization: Token 5eb4cf9d009841b5b4c7c27ce86b9f78b3dac3d0" -H "accept: text/xml" -H "Content-Type: multipart/form-data" -H "X-CSRFToken: 5eb4cf9d009841b5b4c7c27ce86b9f78b3dac3d0" -F "minimum_severity=Info" -F "active=true" -F "verified=true" -F "do_not_reactivate=true" -F "scan_type=ZAP Scan" -F "file=@zap-report.xml;type=text/xml" -F "product_name=WebApp-Pipeline" -F "engagement_name=Devsecops" -F "test=4" -F "test_title=Zap Baseline Scan (ZAP Scan)" -F "push_to_jira=false" -F "close_old_findings=true" -F "close_old_findings_product_scope=false" -F "create_finding_groups_for_all_findings=true"'
         }
       }
     }
