@@ -39,7 +39,7 @@ pipeline {
           sh 'pip3 install semgrep'
           sh 'semgrep --config p/ci --config p/security-audit --config p/secrets --output scan_results.json --json'
           sh 'cat scan_results.json'
-          sh 'curl -X POST -H "accept: application/json" -H "Authorization: Token 1a527bc80ccc95493e36128611e87c26023e52f3" -H "Content-Type: multipart/form-data" -F "test=2" -F "file=@scan_results.json;type=application/json" -F "scan_type=Semgrep JSON Report" -F "tags=WebApp-Pipeline" "http://13.234.59.184:8080/api/v2/reimport-scan"'
+          sh 'curl -X POST -H "accept: application/json" -H "Authorization: Token 1a527bc80ccc95493e36128611e87c26023e52f3" -H "Content-Type: multipart/form-data" -F "test=2" -F "file=@scan_results.json;type=application/json" -F "scan_type=Semgrep JSON Report" -F "product_name=WebApp-Pipeline" -F "test_title=semgrep (Semgrep JSON Report)" "http://13.234.59.184:8080/api/v2/reimport-scan"'
       }
     }
 
