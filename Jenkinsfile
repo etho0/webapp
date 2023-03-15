@@ -38,7 +38,7 @@ pipeline {
     stage('SAST-Semgrep-Scan') {
         steps {
           sh 'pip3 install semgrep'
-          sh 'semgrep --config p/ci --config p/security-audit --config p/secrets --include "https://github.com/etho0/webapp" --output scan_results.json --json'
+          sh 'semgrep --config p/ci --config p/security-audit --config p/secrets --include "https://github.com/etho0/webapp.git" --output scan_results.json --json'
           sh 'cat scan_results.json'
           sh 'curl -X "POST" "http://13.234.59.184:8080/api/v2/reimport-scan/" -H "Authorization: Token a18bbafb590275333ab0302aa1dedd57893280b3" -H "accept: application/json" -H "Content-Type: multipart/form-data" -H "X-CSRFToken: a18bbafb590275333ab0302aa1dedd57893280b3" -F "minimum_severity=Info" -F "active=true" -F "verified=true" -F "do_not_reactivate=true" -F "scan_type=Semgrep JSON Report" -F "file=@scan_results.json;type=application/json" -F "product_name=WebApp-Pipeline" -F "engagement_name=Devsecops" -F "test=2" -F "test_title=semgrep (Semgrep JSON Report)" -F "push_to_jira=false" -F "close_old_findings=true" -F "close_old_findings_product_scope=false" -F "create_finding_groups_for_all_findings=true"'
       }
