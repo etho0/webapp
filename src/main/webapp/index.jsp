@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Devsecops Course by Vijay</title>
+    <title>Devsecops Course by Vijay Tikudave</title>
 
 
     <!-- Custom styles for this template -->
@@ -86,7 +86,6 @@
 </div> <!-- /container -->
 
 
-<!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
